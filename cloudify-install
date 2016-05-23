@@ -13,20 +13,50 @@ if [ ! -d "$VIRTUALENV" ]; then
 fi
 . "$VIRTUALENV/bin/activate"
 
+function has-tag()
+{
+	if git rev-parse -q --verify "refs/tags/$1" >/dev/null; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+function has-branch()
+{
+	local REF=$(git show-ref "refs/remotes/origin/$1")
+	if [ -n "$REF" ]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
 function repo()
 {
 	local REPO="https://github.com/$HUB/$1.git"
-	local HUB=$2
-	if [ -z "$HUB" ]; then
-		HUB=GigaSpaces-ProfessionalServices
-	fi
+	local HUB=${2:-GigaSpaces-ProfessionalServices}
+	local V=${3:-$VERSION}
+
 	if [ ! -d "$PROJECTS/$1" ]; then
 		cd "$PROJECTS"
 		git clone "$REPO"
+	fi
+	cd "$PROJECTS/$1"
+
+	if has-branch $V-maint; then
+		echo "Checkout out branch $V-maint"
+		git checkout $V-maint
+		git pull
+	elif has-tag $V; then
+		echo "Checking out tag $V"
+		git checkout $V
 	else
-		cd "$PROJECTS/$1"
+		echo "Checking out master"
+		git checkout master
 		git pull
 	fi
+
 	if [ -f "$PROJECTS/$1/setup.py" ]; then
 		cd "$PROJECTS/$1"
 		python setup.py install
@@ -36,7 +66,7 @@ function repo()
 repo cloudify-dsl-parser
 repo cloudify-rest-client cloudify-cosmo
 repo cloudify-plugins-common
-repo cloudify-script-plugin cloudify-cosmo
+repo cloudify-script-plugin cloudify-cosmo 1.4
 repo cloudify-cli
 
 repo cloudify-manager-blueprints
