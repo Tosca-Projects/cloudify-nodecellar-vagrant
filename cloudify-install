@@ -34,8 +34,8 @@ function has-branch()
 
 function repo()
 {
-	local REPO="https://github.com/$HUB/$1.git"
 	local HUB=${2:-GigaSpaces-ProfessionalServices}
+	local REPO="https://github.com/$HUB/$1.git"
 	local V=${3:-$VERSION}
 
 	if [ ! -d "$PROJECTS/$1" ]; then
@@ -70,4 +70,4 @@ repo cloudify-script-plugin cloudify-cosmo 1.4
 repo cloudify-cli
 
 repo cloudify-manager-blueprints
-repo cloudify-nodecellar-example cloudify-cosmo
+repo cloudify-nodecellar-example
