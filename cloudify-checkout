@@ -4,9 +4,18 @@ set -e
 HERE=$(dirname "$(readlink -f "$0")")
 . "$HERE/cloudify-config"
 
+function has-tag()
+{
+	if git rev-parse -q --verify "refs/tags/$1" >/dev/null; then
+		return 0
+	else
+		return 1
+	fi
+}
+
 function has-branch()
 {
-	local REF=$(git show-ref refs/remotes/origin/$1)
+	local REF=$(git show-ref "refs/remotes/origin/$1")
 	if [ -n "$REF" ]; then
 		return 0
 	else
@@ -16,23 +25,28 @@ function has-branch()
 
 function repo()
 {
+	local V=${2:-$VERSION}
+	echo ""
 	echo "$1"
 	cd "$PROJECTS/$1"
-	if has-branch $VERSION-maint; then
-		git checkout $VERSION-maint
-	elif has-branch $VERSION-build; then
-		git checkout $VERSION-build
-	elif has-branch $VERSION; then
-		git checkout $VERSION
+	if has-branch $V-maint; then
+		echo "Checkout out branch $V-maint"
+		git checkout $V-maint
+		git pull
+	elif has-tag $V; then
+		echo "Checking out tag $V"
+		git checkout $V
 	else
+		echo "Checking out master"
 		git checkout master
+		git pull
 	fi
 }
 
 repo cloudify-dsl-parser
 repo cloudify-rest-client
 repo cloudify-plugins-common
-repo cloudify-script-plugin
+repo cloudify-script-plugin 1.4
 repo cloudify-cli
 
 repo cloudify-manager-blueprints
