@@ -1,0 +1,13 @@
+#!/bin/bash
+set -e
+
+HERE=$(dirname "$(readlink -f "$0")")
+. "$HERE/cloudify-config"
+
+. "$VIRTUALENV/bin/activate"
+cd "$HERE"
+
+cfy use -t 10.10.2.100
+cfy blueprints upload -b nodecellar-static -p "$HERE/nodecellar-static/nodecellar-static.yaml"
+cfy deployments create -d nodecellar-static -b nodecellar-static -i "$HERE/nodecellar-static/nodecellar-static-inputs.yaml"
+cfy executions start -w install -d nodecellar-static

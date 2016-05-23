@@ -1,0 +1,43 @@
+#!/bin/bash
+set -e
+
+HERE=$(dirname "$(readlink -f "$0")")
+. "$HERE/cloudify-config"
+
+sudo apt install python-setuptools python-dev libyaml-dev
+sudo easy_install pip
+sudo pip install virtualenv
+
+if [ ! -d "$VIRTUALENV" ]; then
+	virtualenv "$VIRTUALENV"
+fi
+. "$VIRTUALENV/bin/activate"
+
+function repo()
+{
+	local REPO="https://github.com/$HUB/$1.git"
+	local HUB=$2
+	if [ -z "$HUB" ]; then
+		HUB=GigaSpaces-ProfessionalServices
+	fi
+	if [ ! -d "$PROJECTS/$1" ]; then
+		cd "$PROJECTS"
+		git clone "$REPO"
+	else
+		cd "$PROJECTS/$1"
+		git pull
+	fi
+	if [ -f "$PROJECTS/$1/setup.py" ]; then
+		cd "$PROJECTS/$1"
+		python setup.py install
+	fi
+}
+
+repo cloudify-dsl-parser
+repo cloudify-rest-client cloudify-cosmo
+repo cloudify-plugins-common
+repo cloudify-script-plugin cloudify-cosmo
+repo cloudify-cli
+
+repo cloudify-manager-blueprints
+repo cloudify-nodecellar-example cloudify-cosmo

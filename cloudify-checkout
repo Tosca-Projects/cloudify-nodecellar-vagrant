@@ -1,0 +1,39 @@
+#!/bin/bash
+set -e
+
+HERE=$(dirname "$(readlink -f "$0")")
+. "$HERE/cloudify-config"
+
+function has-branch()
+{
+	local REF=$(git show-ref refs/remotes/origin/$1)
+	if [ -n "$REF" ]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+function repo()
+{
+	echo "$1"
+	cd "$PROJECTS/$1"
+	if has-branch $VERSION-maint; then
+		git checkout $VERSION-maint
+	elif has-branch $VERSION-build; then
+		git checkout $VERSION-build
+	elif has-branch $VERSION; then
+		git checkout $VERSION
+	else
+		git checkout master
+	fi
+}
+
+repo cloudify-dsl-parser
+repo cloudify-rest-client
+repo cloudify-plugins-common
+repo cloudify-script-plugin
+repo cloudify-cli
+
+repo cloudify-manager-blueprints
+repo cloudify-nodecellar-example
