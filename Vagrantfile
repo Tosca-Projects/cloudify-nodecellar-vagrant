@@ -1,10 +1,10 @@
 Vagrant.configure("2") do |config|
   config.vm.define "manager" do |node|
-    node.vm.box = "boxcutter/centos71"
+    node.vm.box = "boxcutter/centos72"
     node.vm.network :private_network, ip: "10.10.2.100"
     node.vm.provider "virtualbox" do |v|
       v.name = "cloudify-manager"
-      v.memory = 4096 # ElasticSearch needs a lot of RAM!
+      v.memory = 4500 # ElasticSearch needs a lot of RAM!
       v.cpus = 2 # Not necessary but won't hurt
     end
   end

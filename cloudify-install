@@ -34,9 +34,9 @@ function has-branch()
 
 function repo()
 {
-	local HUB=${2:-GigaSpaces-ProfessionalServices}
+	local HUB=${2:-$DEFAULT_HUB}
 	local REPO="https://github.com/$HUB/$1.git"
-	local V=${3:-$VERSION}
+	local VERSION=${3:-$DEFAULT_VERSION}
 
 	if [ ! -d "$PROJECTS/$1" ]; then
 		cd "$PROJECTS"
@@ -44,13 +44,13 @@ function repo()
 	fi
 	cd "$PROJECTS/$1"
 
-	if has-branch $V-maint; then
-		echo "Checkout out branch $V-maint"
-		git checkout $V-maint
+	if has-branch $VERSION-maint; then
+		echo "Checkout out branch $VERSION-maint"
+		git checkout "$VERSION-maint"
 		git pull
-	elif has-tag $V; then
-		echo "Checking out tag $V"
-		git checkout $V
+	elif has-tag $VERSION; then
+		echo "Checking out tag $VERSION"
+		git checkout "$VERSION"
 	else
 		echo "Checking out master"
 		git checkout master
@@ -66,8 +66,14 @@ function repo()
 repo cloudify-dsl-parser
 repo cloudify-rest-client cloudify-cosmo
 repo cloudify-plugins-common
-repo cloudify-script-plugin cloudify-cosmo 1.4
+repo cloudify-script-plugin cloudify-cosmo "$SCRIPT_PLUGIN_VERSION"
 repo cloudify-cli
 
 repo cloudify-manager-blueprints
 repo cloudify-nodecellar-example
+
+
+cd "$HERE"
+set +e
+cfy init -r
+set -e

@@ -1,3 +1,12 @@
 PROJECTS=/Depot/Projects
 VIRTUALENV=~/cloudify
-VERSION=3.3.1
+
+# For master
+DEFAULT_HUB=cloudify-cosmo
+DEFAULT_VERSION=master
+
+# For 3.3.1-maint
+#DEFAULT_HUB=GigaSpaces-ProfessionalServices
+#DEFAULT_VERSION=3.3.1
+#SCRIPT_PLUGIN_VERSION=1.4
+

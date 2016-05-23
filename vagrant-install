@@ -6,12 +6,7 @@ HERE=$(dirname "$(readlink -f "$0")")
 
 sudo apt install vagrant
 
-. "$VIRTUALENV/bin/activate"
 cd "$HERE"
-
-set +e
-cfy init
-set -e
 
 vagrant up
 
