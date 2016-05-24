@@ -2,50 +2,19 @@
 set -e
 
 HERE=$(dirname "$(readlink -f "$0")")
-. "$HERE/cloudify-config"
 
-sudo apt install vagrant
+. "$HERE/cloudify-config"
+. "$HERE/util"
+
+# Install operating system dependencies
+sudo apt install vagrant sshpass
 
 cd "$HERE"
 
 vagrant up
 
-function node()
-{
-	# Make sure to remove old entry in known_hosts
-	ssh-keygen -R "$1"
+setup-manager "$NETWORK.100"
 
-	# Allow logging in using our key
-	echo "!!! If prompted for a password, enter 'vagrant'"
-	ssh-copy-id -i "$HERE/rsa" "vagrant@$1"
-}
-
-function manager()
-{
-	node "$1"
-
-	# Allow login to other nodes
-	# (see nodecellar-static-inputs.yaml agent_private_key_path)
-	scp -i "$HERE/rsa" "$HERE/rsa" "vagrant@$1:.ssh/"
-}
-
-function node-xenial()
-{
-	node "$1"
-
-	# Make sure the node's sshd supports our version of Paramiko
-	# See: http://stackoverflow.com/a/32691055/849021
-	ssh -i "$HERE/rsa" "vagrant@$1" << EOF
-if ! grep -q 'Ciphers ' /etc/ssh/sshd_config; then
-	echo '' | sudo tee --append /etc/ssh/sshd_config
-	echo 'Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes128-ctr' | sudo tee --append /etc/ssh/sshd_config
-	echo 'MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,hmac-ripemd160,hmac-sha1' | sudo tee --append /etc/ssh/sshd_config
-	echo 'KexAlgorithms diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1' | sudo tee --append /etc/ssh/sshd_config
-	sudo systemctl restart ssh
-fi
-EOF
-}
-
-manager 10.10.2.100
-node 10.10.2.101
-node 10.10.2.102
+for I in $(seq 1 "$NODE_COUNT"); do
+	setup-node "$NETWORK.$(( 100 + $I ))"
+done

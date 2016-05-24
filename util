@@ -1,0 +1,69 @@
+
+# git
+
+function has-tag()
+{
+	local REPO=$1
+
+	if git rev-parse -q --verify "refs/tags/$REPO" >/dev/null; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+function has-branch()
+{
+	local REPO=$1
+
+	local REF=$(git show-ref "refs/remotes/origin/$REPO")
+	if [ -n "$REF" ]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+# Vagrant
+
+function setup-node()
+{
+	local NODE=$1
+
+	# Make sure to remove old entry in known_hosts
+	ssh-keygen -R "$NODE"
+
+	# Allow logging in using our key
+	sshpass -p vagrant \
+	ssh-copy-id -o StrictHostKeyChecking=no -i "$HERE/rsa" "vagrant@$NODE"
+}
+
+function setup-manager()
+{
+	local NODE=$1
+
+	setup-node "$NODE"
+
+	# Allow login to other nodes
+	# (see nodecellar-static-inputs.yaml agent_private_key_path)
+	scp -o StrictHostKeyChecking=no -i "$HERE/rsa" "$HERE/rsa" "vagrant@$NODE:.ssh/"
+}
+
+function setup-node-sshd()
+{
+	local NODE=$1
+
+	setup-node "$NODE"
+
+	# Make sure the node's sshd supports our version of Paramiko
+	# See: http://stackoverflow.com/a/32691055/849021
+	ssh -o StrictHostKeyChecking=no -i "$HERE/rsa" "vagrant@$NODE" << EOF
+if ! grep -q 'Ciphers ' /etc/ssh/sshd_config; then
+	echo '' | sudo tee --append /etc/ssh/sshd_config
+	echo 'Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes128-ctr' | sudo tee --append /etc/ssh/sshd_config
+	echo 'MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,hmac-ripemd160,hmac-sha1' | sudo tee --append /etc/ssh/sshd_config
+	echo 'KexAlgorithms diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1' | sudo tee --append /etc/ssh/sshd_config
+	sudo systemctl restart ssh
+fi
+EOF
+}

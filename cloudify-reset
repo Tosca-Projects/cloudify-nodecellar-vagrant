@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+
+HERE=$(dirname "$(readlink -f "$0")")
+
+. "$HERE/cloudify-config"
+
+rm -rf \
+	"$HERE/projects" \
+	"$HERE/env" \
+	"$HERE/.cloudify"
+

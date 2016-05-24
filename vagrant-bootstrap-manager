@@ -2,11 +2,12 @@
 set -e
 
 HERE=$(dirname "$(readlink -f "$0")")
-. "$HERE/cloudify-config"
 
+. "$HERE/cloudify-config"
 . "$VIRTUALENV/bin/activate"
+
 cd "$HERE"
 
 cfy bootstrap --install-plugins \
--p "$PROJECTS/cloudify-manager-blueprints/simple-manager-blueprint.yaml" \
--i "$HERE/manager/manager-simple-inputs-$DEFAULT_VERSION.yaml"
+	-p "$PROJECTS/cloudify-manager-blueprints/simple-manager-blueprint.yaml" \
+	-i "$HERE/manager/manager-simple-inputs-$DEFAULT_VERSION.yaml"

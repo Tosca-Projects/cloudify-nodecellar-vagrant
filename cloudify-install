@@ -1,54 +1,27 @@
 #!/bin/bash
 set -e
 
-HERE=$(dirname "$(readlink -f "$0")")
-. "$HERE/cloudify-config"
-
-sudo apt install python-setuptools python-dev libyaml-dev
-sudo easy_install pip
-sudo pip install virtualenv
-
-if [ ! -d "$VIRTUALENV" ]; then
-	virtualenv "$VIRTUALENV"
-fi
-. "$VIRTUALENV/bin/activate"
-
-function has-tag()
+function install()
 {
-	if git rev-parse -q --verify "refs/tags/$1" >/dev/null; then
-		return 0
-	else
-		return 1
-	fi
-}
-
-function has-branch()
-{
-	local REF=$(git show-ref "refs/remotes/origin/$1")
-	if [ -n "$REF" ]; then
-		return 0
-	else
-		return 1
-	fi
-}
-
-function repo()
-{
+	local NAME=$1
 	local HUB=${2:-$DEFAULT_HUB}
-	local REPO="https://github.com/$HUB/$1.git"
+	local REPO="https://github.com/$HUB/$NAME.git"
 	local VERSION=${3:-$DEFAULT_VERSION}
 
+	# Clone
 	if [ ! -d "$PROJECTS/$1" ]; then
 		cd "$PROJECTS"
 		git clone "$REPO"
 	fi
-	cd "$PROJECTS/$1"
 
-	if has-branch $VERSION-maint; then
+	cd "$PROJECTS/$NAME"
+
+	# Checkout and update
+	if has-branch "$VERSION-maint"; then
 		echo "Checkout out branch $VERSION-maint"
 		git checkout "$VERSION-maint"
 		git pull
-	elif has-tag $VERSION; then
+	elif has-tag "$VERSION"; then
 		echo "Checking out tag $VERSION"
 		git checkout "$VERSION"
 	else
@@ -57,21 +30,46 @@ function repo()
 		git pull
 	fi
 
+	# Setup
 	if [ -f "$PROJECTS/$1/setup.py" ]; then
 		cd "$PROJECTS/$1"
 		python setup.py install
 	fi
 }
 
-repo cloudify-dsl-parser
-repo cloudify-rest-client cloudify-cosmo
-repo cloudify-plugins-common
-repo cloudify-script-plugin cloudify-cosmo "$SCRIPT_PLUGIN_VERSION"
-repo cloudify-cli
+HERE=$(dirname "$(readlink -f "$0")")
 
-repo cloudify-manager-blueprints
-repo cloudify-nodecellar-example
+. "$HERE/cloudify-config"
+. "$HERE/util"
 
+# Install operating system and Python dependencies
+
+sudo apt install python-setuptools python-dev libyaml-dev
+sudo easy_install --upgrade pip
+sudo pip install --upgrade virtualenv
+
+# virtualenv
+
+if [ ! -d "$VIRTUALENV" ]; then
+	virtualenv "$VIRTUALENV"
+fi
+
+. "$VIRTUALENV/bin/activate"
+
+# Install Cloudify
+
+mkdir -p "$PROJECTS"
+
+install cloudify-dsl-parser
+install cloudify-rest-client cloudify-cosmo
+install cloudify-plugins-common
+install cloudify-script-plugin cloudify-cosmo "$SCRIPT_PLUGIN_VERSION"
+install cloudify-cli
+
+install cloudify-manager-blueprints
+install cloudify-nodecellar-example
+
+# cfy
 
 cd "$HERE"
 set +e

@@ -1,12 +1,16 @@
-PROJECTS=/Depot/Projects
-VIRTUALENV=~/cloudify
+# Note: this file needs to be interpreted by both bash and Ruby
+
+NODE_COUNT=2
+NETWORK="10.10.2"
+PROJECTS="$HERE/projects"
+VIRTUALENV="$HERE/env"
 
 # For master
-DEFAULT_HUB=cloudify-cosmo
-DEFAULT_VERSION=master
+DEFAULT_HUB="cloudify-cosmo"
+DEFAULT_VERSION="master"
 
 # For 3.3.1-maint
-#DEFAULT_HUB=GigaSpaces-ProfessionalServices
-#DEFAULT_VERSION=3.3.1
-#SCRIPT_PLUGIN_VERSION=1.4
+#DEFAULT_HUB="GigaSpaces-ProfessionalServices"
+#DEFAULT_VERSION="3.3.1"
+#SCRIPT_PLUGIN_VERSION="1.4"
 
