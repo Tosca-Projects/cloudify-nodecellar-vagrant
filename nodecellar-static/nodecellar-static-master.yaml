@@ -73,7 +73,7 @@ node_templates:
     type: nodecellar.nodes.MonitoredServer
     properties:
       ip: { get_input: node2_ip }
-      cloudify_agent:
+      agent_config:
         user: { get_input: agent_user }
         key: { get_input: agent_private_key_path }
 
@@ -81,7 +81,7 @@ node_templates:
     type: nodecellar.nodes.MonitoredServer
     properties:
       ip: { get_input: node1_ip }
-      cloudify_agent:
+      agent_config:
         user: { get_input: agent_user }
         key: { get_input: agent_private_key_path }
 
