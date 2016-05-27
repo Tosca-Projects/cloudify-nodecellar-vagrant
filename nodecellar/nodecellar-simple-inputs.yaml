@@ -1,5 +1,5 @@
-node1_ip: 10.10.2.101
-node2_ip: 10.10.2.102
+nodejs_host_ip: 10.10.2.101
+mongod_host_ip: 10.10.2.102
 agent_user: vagrant
 agent_private_key_path: /home/vagrant/.ssh/rsa
 

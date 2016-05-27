@@ -24,6 +24,9 @@ function install()
 	elif has-tag "$VERSION"; then
 		echo "Checking out tag $VERSION"
 		git checkout "$VERSION"
+	elif has-branch "$VERSION"; then
+		echo "Checking out branch $VERSION"
+		git checkout "$VERSION"
 	else
 		echo "Checking out master"
 		git checkout master
@@ -59,7 +62,7 @@ fi
 # Install Cloudify
 
 mkdir -p "$PROJECTS"
-
+ 
 install cloudify-dsl-parser
 install cloudify-rest-client cloudify-cosmo
 install cloudify-plugins-common
@@ -67,7 +70,7 @@ install cloudify-script-plugin cloudify-cosmo "$SCRIPT_PLUGIN_VERSION"
 install cloudify-cli
 
 install cloudify-manager-blueprints
-install cloudify-nodecellar-example
+install cloudify-nodecellar-example GigaSpaces-ProfessionalServices add-static-ip-blueprint
 
 # cfy
 

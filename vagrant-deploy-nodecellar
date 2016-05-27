@@ -11,14 +11,14 @@ HERE=$(dirname "$(readlink -f "$0")")
 cfy use -t "$NETWORK.100"
 
 cfy blueprints upload \
-	-b nodecellar-static \
-	-p "$HERE/nodecellar-static/nodecellar-static-$DEFAULT_VERSION.yaml"
+	-b nodecellar \
+	-p "$PROJECTS/cloudify-nodecellar-example/simple-blueprint.yaml"
 
 cfy deployments create \
-	-d nodecellar-static \
-	-b nodecellar-static \
-	-i "$HERE/nodecellar-static/nodecellar-static-inputs.yaml"
+	-d nodecellar \
+	-b nodecellar \
+	-i "$HERE/nodecellar/nodecellar-simple-inputs.yaml"
 
 cfy executions start \
 	-w install \
-	-d nodecellar-static
+	-d nodecellar

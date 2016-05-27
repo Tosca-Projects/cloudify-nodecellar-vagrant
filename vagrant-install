@@ -9,6 +9,8 @@ HERE=$(dirname "$(readlink -f "$0")")
 # Install operating system dependencies
 sudo apt install vagrant sshpass
 
+chmod 400 "$HERE/rsa"
+
 cd "$HERE"
 
 vagrant up
