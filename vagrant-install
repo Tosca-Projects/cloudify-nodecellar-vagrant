@@ -9,7 +9,7 @@ HERE=$(dirname "$(readlink -f "$0")")
 # Install operating system dependencies
 sudo apt install vagrant sshpass
 
-chmod 400 "$HERE/rsa"
+chmod 600 "$HERE/rsa"
 
 cd "$HERE"
 
@@ -17,6 +17,6 @@ vagrant up
 
 setup-manager "$NETWORK.100"
 
-for I in $(seq 1 "$NODE_COUNT"); do
-	setup-node "$NETWORK.$(( 100 + $I ))"
+for I in $(seq 1 "$HOST_COUNT"); do
+	setup-host "$NETWORK.$(( 100 + $I ))"
 done

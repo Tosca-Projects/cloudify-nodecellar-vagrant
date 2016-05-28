@@ -6,7 +6,7 @@ HERE=$(dirname "$(readlink -f "$0")")
 . "$HERE/cloudify-config"
 
 vagrant destroy --force manager
-for I in $(seq 1 "$NODE_COUNT"); do
-	vagrant destroy --force "node$I"
+for I in $(seq 1 "$HOST_COUNT"); do
+	vagrant destroy --force "host$I"
 done
 

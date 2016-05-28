@@ -70,7 +70,7 @@ install cloudify-script-plugin cloudify-cosmo "$SCRIPT_PLUGIN_VERSION"
 install cloudify-cli
 
 install cloudify-manager-blueprints
-install cloudify-nodecellar-example GigaSpaces-ProfessionalServices add-static-ip-blueprint
+install cloudify-nodecellar-example GigaSpaces-ProfessionalServices CFY-5360-and-CFY-5361
 
 # cfy
 
