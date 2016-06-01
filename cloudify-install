@@ -27,6 +27,7 @@ function install()
 	elif has-branch "$VERSION"; then
 		echo "Checking out branch $VERSION"
 		git checkout "$VERSION"
+		git pull
 	else
 		echo "Checking out master"
 		git checkout master
@@ -35,8 +36,9 @@ function install()
 
 	# Setup
 	if [ -f "$PROJECTS/$1/setup.py" ]; then
-		cd "$PROJECTS/$1"
-		python setup.py install
+		pip install --editable "$PROJECTS/$1"
+		#cd "$PROJECTS/$1"
+		#python setup.py install
 	fi
 }
 
@@ -59,18 +61,24 @@ fi
 
 . "$VIRTUALENV/bin/activate"
 
-# Install Cloudify
-
 mkdir -p "$PROJECTS"
- 
+
+# Cloudify CLI
 install cloudify-dsl-parser
 install cloudify-rest-client cloudify-cosmo
 install cloudify-plugins-common
 install cloudify-script-plugin cloudify-cosmo "$SCRIPT_PLUGIN_VERSION"
 install cloudify-cli
 
+# Cloudify Manager
 install cloudify-manager-blueprints
+
+# Node Cellar
 install cloudify-nodecellar-example GigaSpaces-ProfessionalServices CFY-5360-and-CFY-5361
+
+# Tests
+install cloudify-system-tests
+install cloudify-openstack-plugin
 
 # cfy
 

@@ -1,0 +1,16 @@
+#!/bin/bash
+set -e
+
+HERE=$(dirname "$(readlink -f "$0")")
+
+. "$HERE/cloudify-config"
+. "$VIRTUALENV/bin/activate"
+
+PYTHONPATH="$HERE/tests" \
+SUITES_YAML_PATH="$HERE/tests/suites.yaml" \
+HANDLER_CONFIGURATION="$HERE/tests/handler-configuration.yaml" \
+nosetests --nocapture \
+	"$HERE/tests/nodecellar_singlehost_test.py:NodecellarSingleHostTest2"
+
+#	"$PROJECTS/cloudify-system-tests/cosmo_tester/test_suites/test_simple_manager_blueprint/nodecellar_singlehost_test.py:NodecellarSingleHostTest"
+

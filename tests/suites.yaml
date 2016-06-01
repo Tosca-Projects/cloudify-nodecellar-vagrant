@@ -1,0 +1,18 @@
+variables: {}
+
+handler_properties:
+
+  simple_properties:
+    # AbstractSingleHostTest expects OpenStack properties 
+    centos_7_image_user: 'vagrant'
+    centos_7_image_name: ''
+    external_network_name: ''
+    keystone_username: ''
+    keystone_password: ''
+    keystone_tenant_name: ''
+    keystone_url: ''
+    region: ''
+    medium_flavor_id: ''
+
+
+

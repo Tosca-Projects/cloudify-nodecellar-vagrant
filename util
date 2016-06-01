@@ -35,7 +35,7 @@ function setup-host()
 
 	# Allow logging in using our key
 	sshpass -p vagrant \
-	ssh-copy-id -o StrictHostKeyChecking=no -i "$HERE/rsa" "vagrant@$HOST"
+	ssh-copy-id -o StrictHostKeyChecking=no -i "$HERE/keys/rsa" "vagrant@$HOST"
 }
 
 function setup-manager()
@@ -46,7 +46,7 @@ function setup-manager()
 
 	# Allow login to other hosts
 	# (see nodecellar-simple-inputs.yaml agent_private_key_path)
-	scp -o StrictHostKeyChecking=no -i "$HERE/rsa" "$HERE/rsa" "vagrant@$HOST:.ssh"
+	scp -o StrictHostKeyChecking=no -i "$HERE/keys/rsa" "$HERE/keys/rsa" "vagrant@$HOST:.ssh"
 }
 
 function setup-host-sshd()
@@ -57,7 +57,7 @@ function setup-host-sshd()
 
 	# Make sure the host's sshd supports our version of Paramiko
 	# See: http://stackoverflow.com/a/32691055/849021
-	ssh -o StrictHostKeyChecking=no -i "$HERE/rsa" "vagrant@$HOST" << EOF
+	ssh -o StrictHostKeyChecking=no -i "$HERE/keys/rsa" "vagrant@$HOST" << EOF
 if ! grep -q 'Ciphers ' /etc/ssh/sshd_config; then
 	echo '' | sudo tee --append /etc/ssh/sshd_config
 	echo 'Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes128-ctr' | sudo tee --append /etc/ssh/sshd_config
